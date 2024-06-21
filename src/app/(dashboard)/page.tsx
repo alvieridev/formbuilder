@@ -1,4 +1,4 @@
-import { GetFormStats, GetForms } from "@/actions";
+import { GetFormStats, GetForms } from "@/actions/form";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -28,6 +28,7 @@ export default function Home() {
     <Separator className="my-6"/>
     <h2 className="text-4xl font-bold col-span-2">Your Forms</h2>
     <Separator className="my-6"/>
+    {/* responsiveness */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       <CreateFormButton />
       <Suspense fallback={ [1, 2, 3, 4].map((el) => (
@@ -48,6 +49,7 @@ async function CardStatsWrapper () {
 }
 
 interface StatsCardsProps {
+  //i put Awaited here because it will return a Promise, and i cannot work with  Promise
   data?: Awaited<ReturnType<typeof GetFormStats >>,
   loading: boolean
 
@@ -185,7 +187,7 @@ async function FormCards() {
       </CardHeader>
       <CardContent className=" h-[120px] truncate text-sm text-muted-foreground ">
         {
-          form.description || "No description available"
+          form.description || "No description given"
         }
         </CardContent>   
         <CardFooter>
@@ -200,7 +202,7 @@ async function FormCards() {
             )
           }
           {
-            form.published && (
+            !form.published && (
               <Button variant={'secondary'} asChild className="w-full mt-2 text-xl gap-3">
                 <Link href={`/builder/${form.id}`}>
                  Edit Form

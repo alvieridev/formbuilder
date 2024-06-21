@@ -13,6 +13,7 @@ function ErrorPage( {error}: {error: Error} ) {
     <div className='flex w-full h-full flex-col items-center justify-center gap-4'>
         <h2 className="text-destructive text-4xl">
             Something went wrong
+            {/* TODO: eror: {erorr.message} */}
         </h2>
         <Button asChild >
             <Link href={'/'}>Go back home</Link>

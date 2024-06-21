@@ -32,7 +32,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from './ui/use-toast';
 import { formSchema, formSchemaType } from '@/schemas/form';
-import { CreateForm } from '@/actions';
+import { CreateForm } from '@/actions/form';
 import { useRouter } from 'next/navigation';
 
 
@@ -52,6 +52,7 @@ function CreateFormButton() {
                 description:"Form Created Sucessfuly"
             })
             // console.log(formid)
+            // user get redirected to new form page for editting
             router.push(`/builder/${formid}`)
         } catch (error) {
             toast({
