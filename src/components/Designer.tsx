@@ -26,10 +26,17 @@ function Designer() {
         onDragEnd: (event: DragEndEvent) => {
             const {active , over} = event
             if(!active || !over) return
-
+            
+            console.log("The whole event: ", event)
+            console.log("over: ", over)
+            console.log("active: ", active)
+            //checking if the dragged element is a sideBar element.
             const isDesignerBtnElement = active.data?.current?.isDesignerBtnElement;
 
-            const isDroppingOverDesignerDropArea = active.data?.current?.isDesignerDropArea;
+            const isDroppingOverDesignerDropArea = over.data?.current?.isDesignerDropArea;
+            
+            
+            console.log("Designer area: ",isDroppingOverDesignerDropArea)
              
 
             //first scenario: dropping a sidebar element over the designer drop area
@@ -41,11 +48,13 @@ function Designer() {
                 )
                 addElement( elements.length, newElement )
                 console.log("New Element:", newElement)
+                return;
             }
             console.log("Drag end",event)
 
-            const isDroppingOverDesignerElementBottomHalf = over.data?.current?.isTopBottomDesginerElement;
-            const isDroppingOverDesignerElementTopHalf = over.data?.current?.isTopBottomDesginerElement;
+            const isDroppingOverDesignerElementBottomHalf = over.data?.current?.isBottomDesginerElement;
+
+            const isDroppingOverDesignerElementTopHalf = over.data?.current?.isTopHalfDesginerElement;
 
             const isDroppingOverDesignerElement = isDroppingOverDesignerElementTopHalf ||isDroppingOverDesignerElementBottomHalf
 
@@ -74,6 +83,7 @@ function Designer() {
                 }
                 addElement( indexForNewElement, newElement )
                 console.log("New Element:", newElement)   
+                return
             }
 
 
@@ -158,7 +168,7 @@ function DesignerElementWrapper( {element}: {element: FormElementinstance} ) {
         data: {
             type: element.type,
             elementId: element.id,
-            isTopBottomDesginerElement: true,
+            isBottomDesginerElement: true,
         }
     })
     const DesignerElement = formElements[element.type].designerComponent  
@@ -178,7 +188,7 @@ function DesignerElementWrapper( {element}: {element: FormElementinstance} ) {
     ref={draggable.setNodeRef}
     {...draggable.listeners}
     {...draggable.attributes}
-        onMouseEnter={ () => {
+        onMouseEnter={ () => { //when the designerElement is hovered
             setMouseIsOver(true)
         }} 
         onMouseLeave={ () => {
@@ -189,7 +199,7 @@ function DesignerElementWrapper( {element}: {element: FormElementinstance} ) {
             setSelectedElement(element)
         } }
         className='relative h-[120px] flex flex-col text-foreground hover:cursor-pointer rounded-md ring-1 ring-accent ring-inset' >
-    <div  ref={topHalf.setNodeRef} className="absolute w-ful l h-1/2 rounded-t-md "></div>
+    <div  ref={topHalf.setNodeRef} className="absolute w-full l h-1/2 rounded-t-md "></div>
     <div ref={bottomHalf.setNodeRef} className="absolute w-full h-1/2 rounded-b-md  bottom-0"></div>
     {
         mouseIsOver && (

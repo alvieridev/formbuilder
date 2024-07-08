@@ -56,7 +56,7 @@ interface StatsCardsProps {
 
 }
 
-function StatsCards( props: StatsCardsProps ) {
+export function StatsCards( props: StatsCardsProps ) {
   const {data, loading} = props;
 
   return <div className="w-full pt-8 gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -101,7 +101,7 @@ function StatsCards( props: StatsCardsProps ) {
 }
 
 
-function StatsCard( {
+export function StatsCard( {
   title, icon, value, helperText, loading, className
 }: {
   title:string;
@@ -135,7 +135,7 @@ function StatsCard( {
 }
 
 
-function FormCardSkeleton (){
+export function FormCardSkeleton (){
  return <Skeleton className="border-2 border-primary-/20 h-[190px] w-full"/>
 }
 
@@ -152,7 +152,7 @@ async function FormCards() {
   </>
 }
 
- function FormCard( { form }: {form: Form}) {
+export function FormCard( { form }: {form: Form}) {
     return <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 justify-between">

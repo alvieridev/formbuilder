@@ -147,3 +147,107 @@ export async function GetFormById(id : number) {
         }
     })
 }
+
+
+//use this  later to edit the form after it is submitted
+export async function UpdateFormContent(id: number, jsonContent: string){
+    const user = await currentUser();
+    
+    if(!user) {
+        throw new UserNotFoundError()
+    }
+
+    return await prisma.form.update({
+        where: {
+            userId: user.id,
+            id
+        },
+        data: {
+            content: jsonContent
+        }
+    })
+}
+
+
+
+export async function PublishForm(id: number, ){
+    const user = await currentUser();
+    
+    if(!user) {
+        throw new UserNotFoundError()
+    }
+    return await prisma.form.update({
+        where: {
+            userId: user.id,
+            id
+        },
+        data: {
+            // content: jsonContent,
+            published: true,
+        }
+    })
+}
+
+export async function getFormContentByUrl(formUrl:string) {
+    const user = await currentUser();
+    
+    if(!user) {
+        throw new UserNotFoundError()
+    }
+ 
+    return await prisma.form.update({
+        select: {
+            content: true
+        },
+        data: {
+            visits: {
+                increment: 1
+            },
+        },
+        where: {
+            shareURL: formUrl
+        }
+    })
+    
+}
+
+export async function SubmitForm(formUrl: string, content: string){
+
+    return await prisma.form.update({
+        
+        data: {
+            submission: {
+                increment: 1
+            },
+            FormSubmissions: {
+                create: {
+                    content
+                }
+            }
+        },
+        where: {
+            shareURL: formUrl,
+            published:true
+        }
+    }) 
+}
+export async function getFormSubmissions(id : number) {
+    
+    const user = await currentUser();
+    
+    if(!user) {
+        throw new UserNotFoundError()
+    }
+
+
+    return await prisma.form.findUnique({
+        where: {
+            userId: user.id,
+            id
+        },
+        include: {
+            FormSubmissions: true
+        }
+    })
+
+}

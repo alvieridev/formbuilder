@@ -10,18 +10,21 @@ function  DrapOverLayWrapper() {
   const [draggedItem, setDragedItem] = useState<Active | null>(null)
     const minotor = useDndMonitor({
       onDragStart: (event) => {
-        console.log("Drag Item", event)
-        setDragedItem(event.active)
+        // console.log("Drag Item", event)
+        setDragedItem(event.active) //setting the currently dragged element to active.
       }, 
       onDragCancel: () => {
+        console.log("Drag Item Cancelled")
         setDragedItem(null)
       },
       onDragEnd: () => {
+        console.log("Drag Item Ended")
         setDragedItem(null)
       }
     })
 
-
+    // console.log("DRAGGED Item: ",draggedItem)
+    // console.log("Elements ",elements)
     if(!draggedItem) return null
     let node = <div>No drag Overlay</div>
     const isSiderBarButtonElement = draggedItem.data.current?.isDesignerBtnElement;
@@ -34,8 +37,8 @@ function  DrapOverLayWrapper() {
   }
 
   const isDesignerElement = draggedItem.data?.current?.isDesignerElement;
-
-  if(!isDesignerElement){
+  console.log("Is designer Element: ",isDesignerElement)
+  if(isDesignerElement){
     const elementId = draggedItem.data?.current?.elementId; // i use this id to get the element from the DesignerContext
 
     const element = elements.find(e => e.id === elementId)

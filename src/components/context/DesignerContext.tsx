@@ -6,6 +6,7 @@ import { FormElementinstance } from "../FormElements";
 type DesignerContextType = {
     elements: FormElementinstance[];
     removeElement: (index: string) => void;
+    setElements: Dispatch<SetStateAction<FormElementinstance[]>>,
     addElement: (index: number, element: FormElementinstance) => void;
     selectedElement: FormElementinstance | null;
     setSelectedElement: Dispatch<SetStateAction<FormElementinstance | null>>
@@ -17,6 +18,8 @@ export const DesignerContext = createContext<DesignerContextType | null>(null)
 export default function DesignerContextProvider({children}: {children:ReactNode}){
     const [elements, setElements] = useState<FormElementinstance[]>([])
     // TODO: SAVE ADDED ELEMENTS TO LOCALSTOARAGE
+
+    
     const [selectedElement, setSelectedElement] = useState<FormElementinstance | null>(null)
 
     const addElement = ( index:number, element: FormElementinstance ) => {
@@ -48,6 +51,7 @@ export default function DesignerContextProvider({children}: {children:ReactNode}
             removeElement,
             selectedElement,
             setSelectedElement,
+            setElements,
             addElement,
             updateElement,
         }

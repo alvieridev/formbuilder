@@ -3,6 +3,7 @@ import { TextFieldFormElement } from './fields/TextField';
 
 export type ELementsType = "TextField";
 
+export type submitFunction = (key:string, value:string) => void
 
 export type FormElement = {
     type: ELementsType;
@@ -14,15 +15,22 @@ export type FormElement = {
         label: string
     }
 
-    designerComponent: React.FC<{
+    designerComponent: React.FC<{ // This will be used in the drop area after dropping a new formElemnt
         elementInstance: FormElementinstance
     }>;
 
-    formComponent: React.FC;
+    formComponent: React.FC<{ //This will be used in the form preview
+        elementInstance: FormElementinstance
+        submitValue?: (key:string, value:string) => void
+        isInvalid:boolean,
+        defaultValue?:string,
+    }>;
 
-    propertiesComponent: React.FC<{
+    propertiesComponent: React.FC<{//this is used to edit the form properties in the sidebar
         elementInstance: FormElementinstance
     }>;
+
+    validate: (FormElement: FormElementinstance, currentValue : string) => boolean
 
 }
 

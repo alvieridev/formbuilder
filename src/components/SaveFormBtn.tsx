@@ -1,12 +1,16 @@
-import React from 'react'
+"use client"
+import React, { useTransition } from 'react'
 import { Button } from './ui/button'
 import { HiSaveAs } from 'react-icons/hi'
 import useDesigner from './hooks/useDesigner'
 import { UpdateFormContent } from '@/actions/form'
 import { toast } from './ui/use-toast'
+import { FaSpinner } from 'react-icons/fa'
 
-function SaveFormBtn() {
+function SaveFormBtn({id}: {id: number}) {
   const {elements} = useDesigner()
+  const [loading, startTransition] = useTransition()
+
 
   const updateFormContent = async() => {
     try {
@@ -14,7 +18,7 @@ function SaveFormBtn() {
       await UpdateFormContent(id,jsonElements)
       toast({
         title: "Success",
-        description: "Your form has been saved"
+        description: "Your form has been saved!"
       })
     } catch (error) {
       toast({
@@ -25,9 +29,16 @@ function SaveFormBtn() {
     }
   }
   return (
-     <Button variant={"outline"} className='gap-2' >
+     <Button 
+      variant={"outline"}
+      className='gap-2'
+      onClick={ () => {
+        startTransition(updateFormContent)
+      } } 
+      disabled={loading}>
     <HiSaveAs className='h-6 w-6'/>
-    Save
+    {loading ? 'Saving...': 'Save'}
+    {loading && <FaSpinner className='animate-spin' />}
 </Button>
   )
 }

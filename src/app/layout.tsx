@@ -4,6 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/providers/ThemeProviders";
 import { Toaster } from "@/components/ui/toaster";
+import NextTopLoader from 'nextjs-toploader'
 import DesignerContextProvider from "@/components/context/DesignerContext";
 
 
@@ -25,6 +26,7 @@ export default function RootLayout({
 
       <html lang="en">
       <body className={inter.className}>
+        <NextTopLoader />
           <DesignerContextProvider>
             <ThemeProvider
               attribute="class"
