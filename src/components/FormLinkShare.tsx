@@ -32,7 +32,7 @@ export default function FormLinkShare({shareUrl}: {shareUrl: string}) {
                 description:"Link copied to clipboard"
             })
         } }
-    ></Button>
+    >Copy Link</Button>
    </div>
   )
 }
