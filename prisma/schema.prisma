@@ -10,8 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url = env("DATABASE_URL") 
 }
 
 model Form {
@@ -32,6 +31,11 @@ model Form {
 
 
   @@unique([name, userId])
+}
+model User {
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
 }
 
 model FormSubmissions {
