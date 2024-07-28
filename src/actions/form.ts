@@ -1,13 +1,136 @@
 "use server"
 
-import { currentUser } from "@clerk/nextjs/server"
 import prisma from "../lib/prisma"
-import { formSchema, formSchemaType } from "../schemas/form"
+import { formSchema, formSchemaType, formSchemaRegisterType, formSchemaLoginType, formLoginSchema, formRegisterSchema } from "../schemas/form"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import bycryptjs from "bcryptjs"
+import { currentUser, encrypt, formbuildersessionName, UserDetailsType } from "./auth"
+import { cookies } from "next/headers"
 
 
 class UserNotFoundError extends Error {}
+
+
+export async function loginUser(data: formSchemaLoginType){
+
+console.log(data)
+   const validation = formLoginSchema.safeParse( data ); //validation step
+    if( !validation.success ){
+        return{
+            status: 400,
+            message: "Please fill in the required fields",
+            sucess: false,
+        }
+    }
+    const userExist = await prisma.user.findUnique({
+        where: {
+            email: data.email
+        }
+    })
+    if(!userExist) {
+        return{
+            status: 400,
+            message: "User Does not exist",
+            sucess: false,
+        }
+    }
+
+    const correctPassowrd = await bycryptjs.compare(data.password, userExist.password);
+
+    if(!correctPassowrd){
+        return {
+            status: 400,
+            message: "Invalid Credentials",
+            sucess: false,
+        }
+    }
+    
+    const userDetails: UserDetailsType = {
+        userName: userExist.name ?? 'null',
+        userEmail: userExist.email,
+        userId: userExist.id,
+    }
+    
+    // Create a session for the user
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+    const session = await encrypt({ userDetails });
+  
+    // Save the session in a cookie
+    cookies().set(formbuildersessionName, session, { expires, httpOnly: true, sameSite: true });
+
+    return {
+        status: 200,
+        message: "Login successful",
+        sucess: true,
+    }
+
+
+}
+export async function createNewUser(data: formSchemaRegisterType){
+
+
+   const validation = formRegisterSchema.safeParse( data ); //validation step
+    if( !validation.success ){
+        return{
+            status: 400,
+            message: "Please fill in the required fields",
+            sucess: false,
+        }
+    }
+    const userExist = await prisma.user.findUnique({
+        where: {
+            email: data.email
+        }
+    })
+    if(userExist) {
+        return{
+            status: 400,
+            message: "User already exist",
+            sucess: false,
+        }
+    }
+
+    const hashedPassword = await bycryptjs.hash(data.password, 10);
+
+    const newUser = await prisma.user.create({
+        data: {
+            email: data.email,
+            name: data.name,
+            password: hashedPassword,
+        }
+    })
+
+    if (!newUser){
+        return{
+            status: 500,
+            sucess: false,
+            message: "Something went wrong"
+        }
+    }
+    
+    const userDetails: UserDetailsType = {
+        userName: newUser.name ?? 'null',
+        userEmail: newUser.email,
+        userId: newUser.id,
+    }
+    
+    // Create a session for the user
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+    const session = await encrypt({ userDetails });
+  
+    // Save the session in a cookie
+    cookies().set(formbuildersessionName, session, { expires, httpOnly: true, sameSite: true });
+
+    return {
+        status: 201,
+        message: "user created successfully",
+        sucess: true,
+    }
+
+
+}
+
 
 export async function GetFormStats(){
     const user = await currentUser()
@@ -19,7 +142,7 @@ export async function GetFormStats(){
 
     const stats = await prisma.form.aggregate({
         where:{
-            userId: user.id,
+            userId: user.userId.toString(),
         },
         _sum: {
             visits: true,
@@ -66,7 +189,7 @@ export async function CreateForm( data: formSchemaType ){
     const { name, description } = data
     const form = await prisma.form.create({
         data: {
-            userId: user.id,
+            userId: user.userId.toString(),
             name,
             description
         }
@@ -102,11 +225,12 @@ export async function GetForms() {
 
     if(!user) {
         throw new UserNotFoundError()
+
     }
 
     return await prisma.form.findMany({
         where: {
-            userId: user.id, 
+            userId: user.userId.toString(), 
         },
         orderBy:{
              createdAt: 'desc'
@@ -142,7 +266,7 @@ export async function GetFormById(id : number) {
 
     return await prisma.form.findUnique({
         where: {
-            userId: user.id,
+            userId: user.userId.toString(),
             id
         }
     })
@@ -159,7 +283,7 @@ export async function UpdateFormContent(id: number, jsonContent: string){
 
     return await prisma.form.update({
         where: {
-            userId: user.id,
+            userId: user.userId.toString(),
             id
         },
         data: {
@@ -178,7 +302,7 @@ export async function PublishForm(id: number, ){
     }
     return await prisma.form.update({
         where: {
-            userId: user.id,
+            userId: user.userId.toString(),
             id
         },
         data: {
@@ -242,7 +366,7 @@ export async function getFormSubmissions(id : number) {
 
     return await prisma.form.findUnique({
         where: {
-            userId: user.id,
+            userId: user.userId.toString(),
             id
         },
         include: {

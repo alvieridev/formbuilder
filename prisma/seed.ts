@@ -11,6 +11,7 @@ async function main() {
         create: {
             name: "Alvieri",
             email: "alvierime@gmail.com",
+            password: "ww"
         },
     })
     console.log({user})

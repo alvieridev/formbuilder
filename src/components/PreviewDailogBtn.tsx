@@ -30,7 +30,7 @@ function PreviewDailogBtn() {
                 {
                   elements.map(element => {
                     const FormComponent = formElements[element.type].formComponent
-                    return <FormComponent key={element.id} elementInstance={element} />
+                    return <FormComponent key={element.id} elementInstance={element} isInvalid />
                   })
                 }
               </div>
